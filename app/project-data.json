@@ -1,0 +1,58 @@
+{
+  "projects": [
+    {
+      "id": "docs-refresh",
+      "name": "Docs Refresh",
+      "owner": "Mona",
+      "status": "on-track",
+      "recentActivity": "Published the new getting-started guide",
+      "priority": "high",
+      "summary": "Rewrite the contributor docs so new teammates can ship their first change in a day."
+    },
+    {
+      "id": "accessibility-audit",
+      "name": "Accessibility Audit",
+      "owner": "Hubot",
+      "status": "at-risk",
+      "recentActivity": "Merged accessibility fixes for the card grid",
+      "priority": "high",
+      "summary": "Review every page against WCAG AA and fix contrast and keyboard issues."
+    },
+    {
+      "id": "ci-speedup",
+      "name": "CI Speedup",
+      "owner": "Octocat",
+      "status": "blocked",
+      "recentActivity": "Waiting on larger runner approval from the platform team",
+      "priority": "medium",
+      "summary": "Cut pipeline time in half by caching dependencies and splitting test jobs."
+    },
+    {
+      "id": "release-notes-bot",
+      "name": "Release Notes Bot",
+      "owner": "Copilot",
+      "status": "completed",
+      "recentActivity": "Shipped v1.0 and announced it in the team channel",
+      "priority": "low",
+      "summary": "Automatically draft release notes from merged pull requests."
+    },
+    {
+      "id": "onboarding-checklist",
+      "name": "Onboarding Checklist",
+      "owner": "Mona",
+      "status": "on-track",
+      "recentActivity": "Added a first-week checklist template",
+      "priority": "medium",
+      "summary": "Give every new contributor a clear list of first tasks and the people to ask."
+    },
+    {
+      "id": "issue-triage",
+      "name": "Issue Triage Rotation",
+      "owner": "Hubot",
+      "status": "at-risk",
+      "recentActivity": "Backlog grew to 42 untriaged issues this week",
+      "priority": "low",
+      "summary": "Set up a weekly rotation so incoming issues get labelled within two days."
+    }
+  ]
+}

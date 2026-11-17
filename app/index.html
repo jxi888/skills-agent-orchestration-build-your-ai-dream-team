@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Project Pulse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="dashboard-header">
+    <h1>Project Pulse</h1>
+    <p class="dashboard-subtitle">A quick look at what Mona's team is working on: owner, status, recent activity and priority for every project.</p>
+  </header>
+
+  <main class="dashboard">
+    <section class="dashboard-summary" aria-label="Project counts by status"></section>
+
+    <div class="dashboard-message" role="status" aria-live="polite">Loading projects…</div>
+
+    <noscript>
+      <p class="dashboard-message dashboard-message--error">Project Pulse needs JavaScript to load and show projects. Please enable JavaScript and reload the page.</p>
+    </noscript>
+
+    <section class="project-grid" aria-label="Projects"></section>
+  </main>
+
+  <script>
+    (function () {
+      "use strict";
+
+      var DATA_URL = "project-data.json";
+
+      var STATUS_LABELS = {
+        "on-track": "On track",
+        "at-risk": "At risk",
+        "blocked": "Blocked",
+        "completed": "Completed"
+      };
+
+      var PRIORITY_LABELS = {
+        "high": "High priority",
+        "medium": "Medium priority",
+        "low": "Low priority"
+      };
+
+      var PRIORITY_ORDER = { "high": 0, "medium": 1, "low": 2, "unknown": 3 };
+
+      var summaryElement = document.querySelector(".dashboard-summary");
+      var messageElement = document.querySelector(".dashboard-message[role='status']");
+      var gridElement = document.querySelector(".project-grid");
+
+      function asText(value) {
+        if (value === undefined || value === null) {
+          return "";
+        }
+        return String(value).trim();
+      }
+
+      // Trim, lowercase, and turn spaces/underscores into hyphens: "At Risk" -> "at-risk".
+      function normalizeValue(value) {
+        return asText(value).toLowerCase().replace(/[\s_]+/g, "-");
+      }
+
+      function statusModifier(rawStatus) {
+        var cleaned = normalizeValue(rawStatus);
+        return Object.prototype.hasOwnProperty.call(STATUS_LABELS, cleaned) ? cleaned : "unknown";
+      }
+
+      function priorityModifier(rawPriority) {
+        var cleaned = normalizeValue(rawPriority);
+        return Object.prototype.hasOwnProperty.call(PRIORITY_LABELS, cleaned) ? cleaned : "unknown";
+      }
+
+      function statusText(project) {
+        if (project.statusModifier !== "unknown") {
+          return STATUS_LABELS[project.statusModifier];
+        }
+        return project.statusRaw || "Unknown status";
+      }
+
+      function priorityText(project) {
+        if (project.priorityModifier !== "unknown") {
+          return PRIORITY_LABELS[project.priorityModifier];
+        }
+        return project.priorityRaw || "Unknown priority";
+      }
+
+      function prepareProjects(rawProjects) {
+        var prepared = [];
+        rawProjects.forEach(function (project) {
+          if (!project || typeof project !== "object") {
+            return;
+          }
+          var name = asText(project.name);
+          if (!name) {
+            return; // A project without a name cannot be shown meaningfully.
+          }
+          prepared.push({
+            id: asText(project.id),
+            name: name,
+            owner: asText(project.owner) || "Unassigned",
+            statusRaw: asText(project.status),
+            statusModifier: statusModifier(project.status),
+            recentActivity: asText(project.recentActivity) || "No recent activity",
+            priorityRaw: asText(project.priority),
+            priorityModifier: priorityModifier(project.priority),
+            summary: asText(project.summary)
+          });
+        });
+
+        prepared.sort(function (a, b) {
+          var byPriority = PRIORITY_ORDER[a.priorityModifier] - PRIORITY_ORDER[b.priorityModifier];
+          if (byPriority !== 0) {
+            return byPriority;
+          }
+          return a.name.localeCompare(b.name);
+        });
+
+        return prepared;
+      }
+
+      function createElement(tagName, className, text) {
+        var element = document.createElement(tagName);
+        if (className) {
+          element.className = className;
+        }
+        if (text !== undefined) {
+          element.textContent = text;
+        }
+        return element;
+      }
+
+      function createSummaryItem(count, label, modifier) {
+        var item = createElement("div", "summary-item" + (modifier ? " summary-item--" + modifier : ""));
+        item.appendChild(createElement("span", "summary-count", String(count)));
+        item.appendChild(createElement("span", "summary-label", label));
+        return item;
+      }
+
+      function renderSummary(projects) {
+        var counts = { "on-track": 0, "at-risk": 0, "blocked": 0, "completed": 0, "unknown": 0 };
+        projects.forEach(function (project) {
+          counts[project.statusModifier] += 1;
+        });
+
+        summaryElement.textContent = "";
+        summaryElement.appendChild(createSummaryItem(projects.length, "Total", "total"));
+        Object.keys(STATUS_LABELS).forEach(function (statusKey) {
+          summaryElement.appendChild(createSummaryItem(counts[statusKey], STATUS_LABELS[statusKey], statusKey));
+        });
+        if (counts.unknown > 0) {
+          summaryElement.appendChild(createSummaryItem(counts.unknown, "Unknown status", "unknown"));
+        }
+      }
+
+      function createMetaItem(label, valueContent, valueClassName) {
+        var item = createElement("div", "meta-item");
+        item.appendChild(createElement("dt", "meta-label", label));
+        var value = createElement("dd", "meta-value" + (valueClassName ? " " + valueClassName : ""));
+        if (typeof valueContent === "string") {
+          value.textContent = valueContent;
+        } else {
+          value.appendChild(valueContent);
+        }
+        item.appendChild(value);
+        return item;
+      }
+
+      function createProjectCard(project) {
+        var card = createElement("article", "project-card");
+        card.setAttribute("data-status", project.statusModifier);
+        card.setAttribute("data-priority", project.priorityModifier);
+        if (project.id) {
+          card.id = "project-" + normalizeValue(project.id);
+        }
+
+        var header = createElement("div", "project-card__header");
+        header.appendChild(createElement("h2", "project-name", project.name));
+        header.appendChild(createElement("span", "status-badge status-badge--" + project.statusModifier, statusText(project)));
+        card.appendChild(header);
+
+        card.appendChild(createElement("p", "project-owner", "Owner: " + project.owner));
+
+        if (project.summary) {
+          card.appendChild(createElement("p", "project-summary", project.summary));
+        }
+
+        var meta = createElement("dl", "project-meta");
+        meta.appendChild(createMetaItem("Status", statusText(project)));
+        meta.appendChild(createMetaItem("Recent activity", project.recentActivity, "project-activity"));
+        var priorityBadge = createElement("span", "priority-badge priority-badge--" + project.priorityModifier, priorityText(project));
+        meta.appendChild(createMetaItem("Priority", priorityBadge));
+        card.appendChild(meta);
+
+        return card;
+      }
+
+      function showMessage(text, isError) {
+        messageElement.textContent = text;
+        messageElement.classList.toggle("dashboard-message--error", Boolean(isError));
+        messageElement.hidden = false;
+      }
+
+      function hideMessage() {
+        messageElement.textContent = "";
+        messageElement.classList.remove("dashboard-message--error");
+        messageElement.hidden = true;
+      }
+
+      function renderProjects(projects) {
+        renderSummary(projects);
+        gridElement.textContent = "";
+
+        if (projects.length === 0) {
+          showMessage("No projects to show yet.", false);
+          return;
+        }
+
+        projects.forEach(function (project) {
+          gridElement.appendChild(createProjectCard(project));
+        });
+        hideMessage();
+      }
+
+      function errorMessageFor(error) {
+        if (window.location.protocol === "file:") {
+          return "Project Pulse can't load project-data.json when opened directly from disk. " +
+            "Start \"Run Project Pulse Dashboard\" from the Run and Debug view, or run " +
+            "\"python3 -m http.server 5500\" in the app/ folder, then open http://localhost:5500/index.html.";
+        }
+        if (error && error.name === "SyntaxError") {
+          return "Could not read project data: project-data.json is not valid JSON.";
+        }
+        return "Could not load project data. " + (error && error.message ? error.message : "Unknown error.");
+      }
+
+      function loadDashboard() {
+        showMessage("Loading projects…", false);
+
+        fetch(DATA_URL, { cache: "no-store" })
+          .then(function (response) {
+            if (!response.ok) {
+              throw new Error("The server returned HTTP " + response.status + " for " + DATA_URL + ".");
+            }
+            return response.json();
+          })
+          .then(function (data) {
+            if (!data || !Array.isArray(data.projects)) {
+              throw new Error("project-data.json must contain a top-level \"projects\" list.");
+            }
+            renderProjects(prepareProjects(data.projects));
+          })
+          .catch(function (error) {
+            console.error("Project Pulse: failed to load " + DATA_URL, error);
+            renderSummary([]);
+            gridElement.textContent = "";
+            showMessage(errorMessageFor(error), true);
+          });
+      }
+
+      loadDashboard();
+    })();
+  </script>
+</body>
+</html>

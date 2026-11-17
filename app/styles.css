@@ -1,0 +1,576 @@
+/* ==========================================================================
+   Project Pulse — dashboard styles
+   Owner: Designer. Light theme only.
+   All text/background colour pairs below are chosen to meet WCAG AA
+   (>= 4.5:1). Approximate ratios are noted next to each pair.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------------- */
+:root {
+  /* Surfaces */
+  --color-page-bg: #f3f5f9;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f6f8fa;
+  --color-border: #d0d7de;
+  --color-border-strong: #afb8c1;
+
+  /* Text */
+  --color-text: #1f2328;          /* ~15.8:1 on white */
+  --color-text-muted: #57606a;    /* ~6.4:1 on white, ~5.9:1 on page bg */
+
+  /* Header band */
+  --color-header-bg: #1b2a4a;
+  --color-header-text: #ffffff;   /* ~14:1 */
+  --color-header-subtle: #d0d9ea; /* ~10:1 on header bg */
+  --color-header-accent: #4fa3ff;
+
+  /* Focus */
+  --color-focus: #0969da;
+
+  /* Status: text on tint */
+  --status-on-track-text: #116329;   /* ~6.6:1 on tint */
+  --status-on-track-bg: #dafbe1;
+  --status-on-track-border: #4ac26b;
+  --status-at-risk-text: #7d4e00;    /* ~6.7:1 on tint */
+  --status-at-risk-bg: #fff8c5;
+  --status-at-risk-border: #d4a72c;
+  --status-blocked-text: #a40e26;    /* ~6.6:1 on tint */
+  --status-blocked-bg: #ffebe9;
+  --status-blocked-border: #ff8182;
+  --status-completed-text: #6639ba;  /* ~6.4:1 on tint */
+  --status-completed-bg: #fbefff;
+  --status-completed-border: #c297ff;
+  --status-unknown-text: #424a53;    /* ~7.6:1 on tint */
+  --status-unknown-bg: #eaeef2;
+  --status-unknown-border: #afb8c1;
+
+  /* Priority */
+  --priority-high: #cf222e;          /* card accent border */
+  --priority-high-badge-bg: #a40e26; /* white text ~7.5:1 */
+  --priority-medium: #bc4c00;
+  --priority-medium-text: #953800;   /* ~6.3:1 on tint */
+  --priority-medium-bg: #fff1e5;
+  --priority-low: #d0d7de;
+  --priority-low-text: #424a53;      /* ~8.3:1 on white */
+  --priority-unknown: #afb8c1;
+
+  /* Error state */
+  --color-error-text: #82071e;       /* ~9:1 on tint */
+  --color-error-bg: #ffebe9;
+  --color-error-border: #cf222e;
+
+  /* Shape and depth */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.06), 0 1px 3px rgba(31, 35, 40, 0.1);
+  --shadow-md: 0 2px 4px rgba(31, 35, 40, 0.06), 0 6px 16px rgba(31, 35, 40, 0.1);
+  --shadow-lg: 0 4px 8px rgba(31, 35, 40, 0.08), 0 12px 28px rgba(31, 35, 40, 0.14);
+
+  /* Layout */
+  --content-max: 75rem;
+  --gutter: 1.5rem;
+
+  /* Type */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, "Noto Sans", sans-serif;
+
+  --transition-fast: 150ms ease;
+
+  color-scheme: light;
+}
+
+/* --------------------------------------------------------------------------
+   2. Base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--color-text);
+  background-color: var(--color-page-bg);
+  overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+p,
+dl,
+dd {
+  margin: 0;
+}
+
+/* Visible keyboard focus everywhere */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Header band
+   Works as a full-width band (outside <main>) or as a rounded banner
+   (inside .dashboard). Inline padding keeps content aligned with the
+   dashboard column without needing an extra wrapper element.
+   -------------------------------------------------------------------------- */
+.dashboard-header {
+  padding-block: 2rem 2.25rem;
+  padding-inline: max(var(--gutter), calc((100% - var(--content-max)) / 2 + var(--gutter)));
+  color: var(--color-header-text);
+  background-color: var(--color-header-bg);
+  background-image: linear-gradient(135deg, #1b2a4a 0%, #22396a 100%);
+  border-bottom: 4px solid var(--color-header-accent);
+}
+
+.dashboard .dashboard-header {
+  margin-bottom: 1.5rem;
+  padding-inline: var(--gutter);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+}
+
+.dashboard-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.dashboard-subtitle {
+  margin-top: 0.375rem;
+  max-width: 48rem;
+  font-size: 1.0625rem;
+  color: var(--color-header-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   4. Dashboard wrapper
+   -------------------------------------------------------------------------- */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding: 1.75rem var(--gutter) 3rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. Summary strip
+   -------------------------------------------------------------------------- */
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 0.875rem 1rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-top: 4px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.summary-count {
+  font-size: 1.75rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text);
+}
+
+.summary-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Colour accent per summary item (class modifier or data-status).
+   Purely decorative; the label text always carries the meaning. */
+.summary-item--total { border-top-color: var(--color-header-bg); }
+.summary-item--on-track,
+.summary-item[data-status="on-track"] { border-top-color: var(--status-on-track-border); }
+.summary-item--at-risk,
+.summary-item[data-status="at-risk"] { border-top-color: var(--status-at-risk-border); }
+.summary-item--blocked,
+.summary-item[data-status="blocked"] { border-top-color: var(--status-blocked-border); }
+.summary-item--completed,
+.summary-item[data-status="completed"] { border-top-color: var(--status-completed-border); }
+.summary-item--unknown,
+.summary-item[data-status="unknown"] { border-top-color: var(--status-unknown-border); }
+
+/* --------------------------------------------------------------------------
+   6. Project grid
+   -------------------------------------------------------------------------- */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  align-items: stretch;
+}
+
+/* --------------------------------------------------------------------------
+   7. Project card
+   -------------------------------------------------------------------------- */
+.project-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  min-width: 0;
+  padding: 1.25rem 1.375rem 1.375rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-left: 4px solid var(--priority-unknown);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+  overflow-wrap: anywhere;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.project-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.project-card:focus-within {
+  box-shadow: var(--shadow-lg);
+}
+
+/* Priority treatment: high is loudest, low/unknown quietest */
+.project-card[data-priority="high"] {
+  border-left: 6px solid var(--priority-high);
+}
+
+.project-card[data-priority="medium"] {
+  border-left: 4px solid var(--priority-medium);
+}
+
+.project-card[data-priority="low"] {
+  border-left: 4px solid var(--priority-low);
+}
+
+.project-card[data-priority="unknown"] {
+  border-left: 4px dashed var(--priority-unknown);
+}
+
+/* Blocked work gets a faint tinted surface so it stands out while scanning */
+.project-card[data-status="blocked"] {
+  background-color: #fffafa;
+}
+
+.project-card[data-status="completed"] .project-name {
+  color: var(--color-text-muted);
+}
+
+.project-card__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 0.75rem;
+}
+
+.project-name {
+  flex: 1 1 12rem;
+  min-width: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.project-owner {
+  font-size: 0.9375rem;
+  color: var(--color-text-muted);
+}
+
+.project-summary {
+  font-size: 0.9375rem;
+  color: var(--color-text);
+}
+
+.project-activity {
+  padding: 0.625rem 0.75rem;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  background-color: var(--color-surface-muted);
+  border-left: 3px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+}
+
+/* Metadata list: <dl class="project-meta"> > .meta-item > dt + dd */
+.project-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: 0.75rem 1rem;
+  margin-top: auto; /* pins meta to card bottom so rows align across cards */
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.meta-item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.meta-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.meta-value {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+/* --------------------------------------------------------------------------
+   8. Status badges (pill). Text always visible; colour is a secondary cue.
+   -------------------------------------------------------------------------- */
+.status-badge,
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: 100%;
+  padding: 0.1875rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border: 1px solid transparent; /* keeps a visible edge in forced-colors mode */
+  border-radius: var(--radius-pill);
+}
+
+/* Small leading dot reinforces the status without relying on it */
+.status-badge::before {
+  content: "";
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  background-color: currentColor;
+  border-radius: 50%;
+}
+
+.status-badge--on-track {
+  color: var(--status-on-track-text);
+  background-color: var(--status-on-track-bg);
+  border-color: var(--status-on-track-border);
+}
+
+.status-badge--at-risk {
+  color: var(--status-at-risk-text);
+  background-color: var(--status-at-risk-bg);
+  border-color: var(--status-at-risk-border);
+}
+
+.status-badge--blocked {
+  color: var(--status-blocked-text);
+  background-color: var(--status-blocked-bg);
+  border-color: var(--status-blocked-border);
+}
+
+.status-badge--completed {
+  color: var(--status-completed-text);
+  background-color: var(--status-completed-bg);
+  border-color: var(--status-completed-border);
+}
+
+.status-badge--unknown {
+  color: var(--status-unknown-text);
+  background-color: var(--status-unknown-bg);
+  border-color: var(--status-unknown-border);
+  border-style: dashed;
+}
+
+/* --------------------------------------------------------------------------
+   9. Priority badges: high = solid + bold, medium = tinted,
+      low = outline, unknown = dashed neutral.
+   -------------------------------------------------------------------------- */
+.priority-badge--high {
+  color: #ffffff;
+  font-weight: 700;
+  background-color: var(--priority-high-badge-bg);
+  border-color: var(--priority-high-badge-bg);
+}
+
+.priority-badge--medium {
+  color: var(--priority-medium-text);
+  background-color: var(--priority-medium-bg);
+  border-color: var(--priority-medium);
+}
+
+.priority-badge--low {
+  color: var(--priority-low-text);
+  font-weight: 500;
+  background-color: var(--color-surface);
+  border-color: var(--priority-low);
+}
+
+.priority-badge--unknown {
+  color: var(--status-unknown-text);
+  font-weight: 500;
+  font-style: italic;
+  background-color: var(--color-surface-muted);
+  border-color: var(--priority-unknown);
+  border-style: dashed;
+}
+
+/* --------------------------------------------------------------------------
+   10. Loading / empty / error states
+   -------------------------------------------------------------------------- */
+.dashboard-message {
+  grid-column: 1 / -1; /* spans the grid if rendered inside .project-grid */
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--color-text-muted);
+  background-color: var(--color-surface);
+  border: 1px dashed var(--color-border-strong);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.dashboard-message:empty {
+  display: none;
+}
+
+.dashboard-message--error {
+  text-align: left;
+  font-weight: 500;
+  color: var(--color-error-text);
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-left: 6px solid var(--color-error-border);
+}
+
+.dashboard-message code {
+  padding: 0.0625rem 0.3125rem;
+  font-size: 0.875em;
+  background-color: rgba(31, 35, 40, 0.08);
+  border-radius: var(--radius-sm);
+}
+
+/* --------------------------------------------------------------------------
+   11. Utilities
+   -------------------------------------------------------------------------- */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* --------------------------------------------------------------------------
+   12. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+  :root {
+    --gutter: 1rem;
+  }
+
+  .dashboard-header {
+    padding-block: 1.5rem 1.75rem;
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.625rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 1rem;
+  }
+
+  .dashboard {
+    padding-top: 1.25rem;
+  }
+
+  .project-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .project-card {
+    padding: 1rem 1.125rem 1.125rem;
+  }
+
+  .summary-count {
+    font-size: 1.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   13. Motion and forced colours
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  .project-card:hover {
+    transform: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .project-card,
+  .summary-item,
+  .dashboard-message,
+  .status-badge,
+  .priority-badge {
+    border-color: CanvasText;
+  }
+
+  .status-badge::before {
+    background-color: CanvasText;
+  }
+}
